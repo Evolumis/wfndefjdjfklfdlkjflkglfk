@@ -213,43 +213,47 @@ export function App() {
 
   // Public embed or direct standalone modes:
   // Active if explicitly requested via query parameter ?mode=..., pathname (/devis, /chat, /newsletter...), or widget hash (#widget_...)
+  // Never active when inside Nextcloud plugin mode (?nextcloud=1 or ?plugin=...)
   const isNewsletterMode =
-    embedMode === 'newsletter' ||
-    embedMode === 'infolettre' ||
-    embedMode === 'widget_newsletter' ||
-    pathname === '/newsletter' ||
-    pathname === '/infolettre' ||
-    pathname === '/embed/newsletter' ||
-    hash === '#widget_newsletter' ||
-    hash === '#embed_newsletter' ||
-    (!isAuthenticated && (hash === '#infolettre' || hash === '#newsletter' || hash === '#/infolettre' || hash === '#/newsletter'));
+    !isNextcloudMode &&
+    (embedMode === 'newsletter' ||
+      embedMode === 'infolettre' ||
+      embedMode === 'widget_newsletter' ||
+      pathname === '/newsletter' ||
+      pathname === '/infolettre' ||
+      pathname === '/embed/newsletter' ||
+      hash === '#widget_newsletter' ||
+      hash === '#embed_newsletter' ||
+      (!isAuthenticated && (hash === '#infolettre' || hash === '#newsletter' || hash === '#/infolettre' || hash === '#/newsletter')));
 
   const isDevisMode =
-    embedMode === 'widget_devis' ||
-    embedMode === 'devis' ||
-    embedMode === 'soumission' ||
-    embedMode === 'quote' ||
-    pathname === '/soumission' ||
-    pathname.startsWith('/soumission/') ||
-    pathname === '/devis' ||
-    pathname.startsWith('/devis/') ||
-    pathname === '/embed/devis' ||
-    pathname === '/embed/soumission' ||
-    pathname === '/form' ||
-    hash === '#soumission' ||
-    hash === '#/soumission' ||
-    hash === '#widget_devis' ||
-    hash === '#embed_devis' ||
-    (!isAuthenticated && (hash === '#devis' || hash === '#soumission' || hash === '#form' || hash === '#/devis' || hash === '#/soumission' || hash === '#/form'));
+    !isNextcloudMode &&
+    (embedMode === 'widget_devis' ||
+      embedMode === 'devis' ||
+      embedMode === 'soumission' ||
+      embedMode === 'quote' ||
+      pathname === '/soumission' ||
+      pathname.startsWith('/soumission/') ||
+      pathname === '/devis' ||
+      pathname.startsWith('/devis/') ||
+      pathname === '/embed/devis' ||
+      pathname === '/embed/soumission' ||
+      pathname === '/form' ||
+      hash === '#soumission' ||
+      hash === '#/soumission' ||
+      hash === '#widget_devis' ||
+      hash === '#embed_devis' ||
+      (!isAuthenticated && (hash === '#devis' || hash === '#soumission' || hash === '#form' || hash === '#/devis' || hash === '#/soumission' || hash === '#/form')));
 
   const isChatMode =
-    embedMode === 'widget_chat' ||
-    embedMode === 'chat' ||
-    pathname === '/chat' ||
-    pathname === '/embed/chat' ||
-    hash === '#widget_chat' ||
-    hash === '#embed_chat' ||
-    (!isAuthenticated && (hash === '#chat' || hash === '#martine' || hash === '#/chat' || hash === '#/martine'));
+    !isNextcloudMode &&
+    (embedMode === 'widget_chat' ||
+      embedMode === 'chat' ||
+      pathname === '/chat' ||
+      pathname === '/embed/chat' ||
+      hash === '#widget_chat' ||
+      hash === '#embed_chat' ||
+      (!isAuthenticated && (hash === '#chat' || hash === '#martine' || hash === '#/chat' || hash === '#/martine')));
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
 

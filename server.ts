@@ -2379,6 +2379,15 @@ app.get('/api/nextcloud/widgets/data', (req, res) => {
 });
 
 app.get('/api/nextcloud/install-script.sh', (req, res) => {
+  try {
+    const scriptPath = path.join(process.cwd(), 'install-github-nextcloud.sh');
+    if (fs.existsSync(scriptPath)) {
+      const content = fs.readFileSync(scriptPath, 'utf-8');
+      res.setHeader('Content-Type', 'application/x-sh; charset=utf-8');
+      res.setHeader('Content-Disposition', 'attachment; filename="install-github-nextcloud.sh"');
+      return res.send(content);
+    }
+  } catch {}
   const host = req.get('host') || 'intranet.evasionsoleil.com';
   const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   const appBaseUrl = String(req.query.base_url || `https://intranet.evasionsoleil.com:1031` || `${protocol}://${host}`).replace(/\/+$/, '');

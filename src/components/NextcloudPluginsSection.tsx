@@ -209,8 +209,15 @@ export const NextcloudPluginsSection: React.FC<NextcloudPluginsSectionProps> = (
     },
   ];
 
+  const [dashLayoutMode, setDashLayoutMode] = useState<'grid4' | 'grid2' | 'focus'>('grid4');
+  const [dashFocusPlugin, setDashFocusPlugin] = useState<string>('submissions');
+  const [dashSlots, setDashSlots] = useState<string[]>(['submissions', 'crm', 'chatbot', 'newsletter']);
+
   const buildPluginUrl = (pluginId: string, headerType: '0' | 'compact' = brandingForm.headerMode === '0' ? '0' : 'compact') => {
-    const cleanBase = (brandingForm.appBaseUrl || baseUrl).trim().replace(/\/+$/, '');
+    const cleanDomain = (brandingForm.intranetDomain || 'https://intranet.evasionsoleil.com').trim().replace(/\/+$/, '');
+    const cleanBase = brandingForm.appBaseUrl
+      ? brandingForm.appBaseUrl.trim().replace(/\/+$/, '')
+      : `${cleanDomain}/index.php/apps/evasionsoleil/app`;
     const params = new URLSearchParams();
     params.set('nextcloud', '1');
     params.set('plugin', pluginId);
@@ -218,7 +225,12 @@ export const NextcloudPluginsSection: React.FC<NextcloudPluginsSectionProps> = (
     if (brandingForm.ssoAutoLoginUser && brandingForm.ssoAutoLoginUser !== 'none') {
       params.set('nc_user', brandingForm.ssoAutoLoginUser);
     }
-    return `${cleanBase}/?${params.toString()}#${pluginId}`;
+    return `${cleanBase}?${params.toString()}#${pluginId}`;
+  };
+
+  const buildLocalPreviewUrl = (pluginId: string) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    return `${origin}/?nextcloud=1&plugin=${encodeURIComponent(pluginId)}&header=0#${encodeURIComponent(pluginId)}`;
   };
 
   const handleCopy = (text: string, id: string) => {
@@ -1041,6 +1053,137 @@ export const NextcloudPluginsSection: React.FC<NextcloudPluginsSectionProps> = (
                     </button>
                   </div>
                 </div>
+
+                {/* COCKPIT MULTI-PLUGINS INTERACTIF EN DIRECT SUR LE DASHBOARD NEXTCLOUD */}
+                <div className="bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-xl space-y-4">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#338b84] to-[#0082c9] flex items-center justify-center text-lg shadow-md">
+                        ☀️
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-black text-white">
+                          Cockpit Multi-Plugins Interactif — Directement sur /index.php/apps/dashboard/
+                        </h4>
+                        <p className="text-[11px] text-slate-400">
+                          Interagissez avec vos plugins directement sur le Tableau de bord Nextcloud (Grille 4 plugins, Côte-à-côte ou Plein-Dashboard)
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setDashLayoutMode('grid4')}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                          dashLayoutMode === 'grid4'
+                            ? 'bg-gradient-to-r from-[#0082c9] to-[#338b84] text-white shadow-sm'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                      >
+                        🧩 Grille 4 Plugins (2x2)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDashLayoutMode('grid2')}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                          dashLayoutMode === 'grid2'
+                            ? 'bg-gradient-to-r from-[#0082c9] to-[#338b84] text-white shadow-sm'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                      >
+                        ⚡ Côte-à-côte (2 Plugins)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDashLayoutMode('focus')}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                          dashLayoutMode === 'focus'
+                            ? 'bg-gradient-to-r from-[#0082c9] to-[#338b84] text-white shadow-sm'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                      >
+                        🖥️ Mode Plein-Dashboard (1 Plugin)
+                      </button>
+                    </div>
+                  </div>
+
+                  {dashLayoutMode === 'focus' ? (
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {plugins.map((p) => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => setDashFocusPlugin(p.id)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                              dashFocusPlugin === p.id
+                                ? 'bg-[#0082c9] text-white shadow-xs'
+                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            }`}
+                          >
+                            {p.shortName}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="bg-white rounded-xl overflow-hidden border border-slate-700">
+                        <iframe
+                          src={buildLocalPreviewUrl(dashFocusPlugin)}
+                          className="w-full h-[640px] border-0 block bg-slate-50"
+                          title={`Dashboard Nextcloud - ${dashFocusPlugin}`}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      {dashSlots.slice(0, dashLayoutMode === 'grid2' ? 2 : 4).map((slotPluginId, idx) => (
+                        <div key={idx} className="bg-white rounded-xl overflow-hidden border border-slate-700 flex flex-col">
+                          <div className="bg-slate-950 text-white px-3 py-2 flex items-center justify-between gap-2">
+                            <select
+                              value={slotPluginId}
+                              onChange={(e) => {
+                                const next = [...dashSlots];
+                                next[idx] = e.target.value;
+                                setDashSlots(next);
+                              }}
+                              className="bg-slate-800 text-white text-xs font-bold px-2.5 py-1 rounded-lg border border-slate-700 cursor-pointer"
+                            >
+                              {plugins.map((p) => (
+                                <option key={p.id} value={p.id}>
+                                  {p.shortName}
+                                </option>
+                              ))}
+                            </select>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setDashFocusPlugin(slotPluginId);
+                                  setDashLayoutMode('focus');
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-[#0082c9] text-[11px] font-bold text-slate-200 cursor-pointer"
+                              >
+                                Agrandir ici
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => onOpenPluginTab(slotPluginId)}
+                                className="px-2.5 py-1 rounded-lg bg-[#0082c9] hover:bg-[#006aa3] text-[11px] font-bold text-white cursor-pointer"
+                              >
+                                Pleine page ↗
+                              </button>
+                            </div>
+                          </div>
+                          <iframe
+                            src={buildLocalPreviewUrl(slotPluginId)}
+                            className="w-full h-[460px] border-0 block bg-slate-50"
+                            title={`Slot ${idx + 1} - ${slotPluginId}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               /* Simulated Full App Embed */
@@ -1087,37 +1230,37 @@ export const NextcloudPluginsSection: React.FC<NextcloudPluginsSectionProps> = (
       {/* SUBTAB 3: CATALOGUE DES PLUGINS MAISON */}
       {activeMainSubTab === 'plugins' && (
         <div className="space-y-6">
-          {/* GitHub 1-Command Auto-Deploy Card for intranet.evasionsoleil.com */}
+          {/* GitHub 1-Command Auto-Deploy Card for Nextcloud Snap & Standard on intranet.evasionsoleil.com */}
           <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-slate-800 shadow-lg space-y-4">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="space-y-1.5">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-black uppercase tracking-wider border border-emerald-500/30">
                   <Terminal className="h-3.5 w-3.5" />
-                  <span>Installation Directe via GitHub sur intranet.evasionsoleil.com (Sans employee.evasionsoleil.com)</span>
+                  <span>Compatible 100% Nextcloud Snap (/var/snap/nextcloud/...) + Dashboard Interactif</span>
                 </div>
                 <h3 className="text-lg font-black text-white">
-                  Installez tout votre système + vos plugins Nextcloud depuis GitHub en 1 commande
+                  Activez le Dashboard Multi-Plugins Interactif + Corrigez l'écran blanc sur Nextcloud Snap
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed max-w-3xl">
-                  Puisque <code>employee.evasionsoleil.com</code> n'existe plus et que tout est centralisé sur <strong><code>intranet.evasionsoleil.com</code></strong>, le fichier <strong><code>install-github-nextcloud.sh</code></strong> (inclus à la racine de votre dépôt GitHub) compile automatiquement votre application, la lance en service 24/7 sur le serveur et installe tous vos plugins maison dans <code>/var/www/nextcloud/custom_apps/</code>.
+                  Le script <strong><code>install-github-nextcloud.sh</code></strong> détecte automatiquement votre <strong>Nextcloud Snap</strong> (<code>/var/snap/nextcloud/current/nextcloud/extra-apps</code> &amp; <code>nextcloud.occ</code>), installe la <strong>Passerelle PHP Native</strong>, répare vos liens <code>/apps/external/</code>, et injecte le <strong>Dashboard Multi-Plugins Interactif (Grille 4 plugins 2x2)</strong> directement sur <code>https://intranet.evasionsoleil.com/index.php/apps/dashboard/</code> !
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() =>
                   handleCopy(
-                    'git clone VOTRE_LIEN_GITHUB /opt/evasion-intranet && cd /opt/evasion-intranet && sudo bash install-github-nextcloud.sh',
+                    'cd /opt/evasion-intranet && sudo git pull && sudo bash install-github-nextcloud.sh',
                     'github_cmd'
                   )
                 }
                 className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs transition-all cursor-pointer shrink-0"
               >
                 {copiedId === 'github_cmd' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                <span>{copiedId === 'github_cmd' ? 'Commande copiée !' : 'Copier la commande GitHub'}</span>
+                <span>{copiedId === 'github_cmd' ? 'Commande copiée !' : 'Copier la commande SSH Snap'}</span>
               </button>
             </div>
             <div className="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 font-mono text-xs text-emerald-400 overflow-x-auto select-all">
-              git clone VOTRE_LIEN_GITHUB /opt/evasion-intranet &amp;&amp; cd /opt/evasion-intranet &amp;&amp; sudo bash install-github-nextcloud.sh
+              cd /opt/evasion-intranet &amp;&amp; sudo git pull &amp;&amp; sudo bash install-github-nextcloud.sh
             </div>
           </div>
 

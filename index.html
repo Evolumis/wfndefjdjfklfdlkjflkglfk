@@ -45,17 +45,28 @@
           }
         }
       } catch (e) {}
-      // Automatic API subpath router when hosted directly inside intranet.evasionsoleil.com (/evasion-app or Nextcloud proxy)
+      // Automatic API subpath router when hosted directly inside intranet.evasionsoleil.com (/evasion-app or Nextcloud Snap PHP proxy)
       try {
         var origFetch = window.fetch;
         window.fetch = function(input, init) {
           if (typeof input === 'string' && input.indexOf('/api/') === 0) {
             var p = window.location.pathname || '';
-            if (p.indexOf('/evasion-app') === 0) {
+            var proxyBase = window.__EVASION_NC_PROXY__ || '';
+            if (!proxyBase && p.indexOf('/apps/evasionsoleil/') !== -1) {
+              var prefix = p.split('/apps/evasionsoleil/')[0];
+              proxyBase = prefix + '/apps/evasionsoleil/proxy?target=';
+            }
+            if (proxyBase) {
+              var proxyUrl = proxyBase + encodeURIComponent(input);
+              var nextInit = init ? Object.assign({}, init) : {};
+              var method = (nextInit.method || 'GET').toUpperCase();
+              if (method === 'PUT' || method === 'DELETE' || method === 'PATCH') {
+                proxyUrl += '&_method=' + method;
+                nextInit.method = 'POST';
+              }
+              return origFetch.call(this, proxyUrl, nextInit);
+            } else if (p.indexOf('/evasion-app') === 0) {
               input = '/evasion-app' + input;
-            } else if (p.indexOf('/apps/evasionsoleil/proxy') !== -1) {
-              var prefix = p.split('/apps/evasionsoleil/proxy')[0] + '/apps/evasionsoleil/proxy';
-              input = prefix + input;
             }
           }
           return origFetch.call(this, input, init);
@@ -63,25 +74,34 @@
       } catch (e) {}
       try {
         var href = window.location.href.toLowerCase();
+        var isNextcloudPluginView =
+          href.indexOf('nextcloud=1') !== -1 ||
+          href.indexOf('nc=1') !== -1 ||
+          href.indexOf('plugin=') !== -1 ||
+          href.indexOf('/apps/evasion') !== -1;
         var isChatEmbed =
-          href.indexOf('mode=widget_chat') !== -1 ||
-          href.indexOf('mode=chat') !== -1 ||
-          href.indexOf('/chat') !== -1 ||
-          href.indexOf('/embed/chat') !== -1;
+          !isNextcloudPluginView && (
+            href.indexOf('mode=widget_chat') !== -1 ||
+            href.indexOf('mode=chat') !== -1 ||
+            href.indexOf('/chat') !== -1 ||
+            href.indexOf('/embed/chat') !== -1
+          );
         var isTransparentEmbed =
-          isChatEmbed ||
-          href.indexOf('mode=widget_devis') !== -1 ||
-          href.indexOf('mode=devis') !== -1 ||
-          href.indexOf('layout=home') !== -1 ||
-          href.indexOf('/soumission') !== -1 ||
-          href.indexOf('/devis') !== -1 ||
-          href.indexOf('/embed/devis') !== -1 ||
-          href.indexOf('mode=widget_newsletter') !== -1 ||
-          href.indexOf('mode=newsletter') !== -1 ||
-          href.indexOf('mode=infolettre') !== -1 ||
-          href.indexOf('/newsletter') !== -1 ||
-          href.indexOf('/infolettre') !== -1 ||
-          href.indexOf('/embed/newsletter') !== -1;
+          !isNextcloudPluginView && (
+            isChatEmbed ||
+            href.indexOf('mode=widget_devis') !== -1 ||
+            href.indexOf('mode=devis') !== -1 ||
+            href.indexOf('layout=home') !== -1 ||
+            href.indexOf('/soumission') !== -1 ||
+            href.indexOf('/devis') !== -1 ||
+            href.indexOf('/embed/devis') !== -1 ||
+            href.indexOf('mode=widget_newsletter') !== -1 ||
+            href.indexOf('mode=newsletter') !== -1 ||
+            href.indexOf('mode=infolettre') !== -1 ||
+            href.indexOf('/newsletter') !== -1 ||
+            href.indexOf('/infolettre') !== -1 ||
+            href.indexOf('/embed/newsletter') !== -1
+          );
 
         if (isTransparentEmbed) {
           document.documentElement.classList.add('transparent-embed-mode');
