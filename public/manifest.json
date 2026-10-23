@@ -1,0 +1,32 @@
+{
+  "name": "Évasion Soleil Pro",
+  "short_name": "Évasion Pro",
+  "description": "Portail mobile et notifications de devis & clavardage Martine V. - Voyages Évasion Soleil",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#338b84",
+  "orientation": "portrait",
+  "id": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

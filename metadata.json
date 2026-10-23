@@ -1,0 +1,10 @@
+{
+  "name": "Nextcloud Évasion Soleil - Dashboard Chatbot \u0026 Devis",
+  "description": "Plateforme centralisée Évasion Soleil : gestion du chatbot Martine V., formulaire de devis interactif, suivi des soumissions avec tri d\u0027appels, statistiques, chat d\u0027équipe, gestion des grades et intégration MySQL / Pterodactyl.",
+  "requestFramePermissions": [
+    "notifications"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

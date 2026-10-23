@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-amber-50: #f0f8f7;
+  --color-amber-100: #daf0ed;
+  --color-amber-200: #b5e1dc;
+  --color-amber-300: #85cac3;
+  --color-amber-400: #55b0a7;
+  --color-amber-500: #338b84;
+  --color-amber-600: #286f6a;
+  --color-amber-700: #205753;
+  --color-amber-800: #1a4542;
+  --color-amber-900: #143734;
+  --color-amber-950: #0a1f1d;
+
+  --color-orange-50: #f0f8f7;
+  --color-orange-100: #daf0ed;
+  --color-orange-200: #b5e1dc;
+  --color-orange-300: #85cac3;
+  --color-orange-400: #55b0a7;
+  --color-orange-500: #338b84;
+  --color-orange-600: #286f6a;
+  --color-orange-700: #205753;
+  --color-orange-800: #1a4542;
+  --color-orange-900: #143734;
+  --color-orange-950: #0a1f1d;
+
+  --color-brand: #338b84;
+  --color-brand-hover: #286f6a;
+}
+
+/* Global CSS Variables for Dashboard Theme */
+:root {
+  --theme-bg-page: #f1f5f9;
+  --theme-bg-card: #ffffff;
+  --theme-bg-elevated: #f8fafc;
+  --theme-bg-hover: #f1f5f9;
+  --theme-border: #e2e8f0;
+  --theme-border-subtle: #f1f5f9;
+  --theme-text-primary: #0f172a;
+  --theme-text-secondary: #475569;
+  --theme-text-muted: #64748b;
+  --theme-input-bg: #ffffff;
+  --theme-input-border: #cbd5e1;
+  --theme-brand-primary: #338b84;
+  --theme-brand-hover: #286f6a;
+  --theme-brand-light: #f0f8f7;
+  --theme-nav-bg: #ffffff;
+  --theme-dropdown-bg: #ffffff;
+}
+
+html.widget-chat-mode,
+body.widget-chat-mode {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body.widget-chat-mode #root {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  justify-content: flex-end !important;
+}
+

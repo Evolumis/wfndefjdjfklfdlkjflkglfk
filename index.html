@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Évasion Soleil - Dashboard Chatbot & Devis</title>
+    <meta name="theme-color" content="#338b84" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Évasion Pro" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="description" content="Plateforme centralisée Évasion Soleil : gestion du chatbot Martine V., formulaire de devis interactif, suivi des soumissions avec tri d'appels, statistiques, chat d'équipe, gestion des grades et intégration MySQL / Pterodactyl." />
+    <meta property="og:title" content="Évasion Soleil - Dashboard Chatbot & Devis" />
+    <meta property="og:description" content="Plateforme centralisée Évasion Soleil : gestion du chatbot Martine V., formulaire de devis interactif, suivi des soumissions avec tri d'appels, statistiques, chat d'équipe, gestion des grades et intégration MySQL / Pterodactyl." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json" />
+    <script>
+      // Force clear any stale PWA Service Worker precache so UI updates appear immediately
+      try {
+        var APP_UI_VERSION = '2026-10-23-v6-nextcloud';
+        if (localStorage.getItem('evasion_ui_version') !== APP_UI_VERSION) {
+          localStorage.setItem('evasion_ui_version', APP_UI_VERSION);
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+              for (var i = 0; i < regs.length; i++) {
+                regs[i].unregister();
+              }
+            });
+          }
+          if ('caches' in window) {
+            caches.keys().then(function(names) {
+              for (var i = 0; i < names.length; i++) {
+                caches.delete(names[i]);
+              }
+            });
+          }
+        }
+      } catch (e) {}
+      // Automatic API subpath router when hosted directly inside intranet.evasionsoleil.com (/evasion-app or Nextcloud proxy)
+      try {
+        var origFetch = window.fetch;
+        window.fetch = function(input, init) {
+          if (typeof input === 'string' && input.indexOf('/api/') === 0) {
+            var p = window.location.pathname || '';
+            if (p.indexOf('/evasion-app') === 0) {
+              input = '/evasion-app' + input;
+            } else if (p.indexOf('/apps/evasionsoleil/proxy') !== -1) {
+              var prefix = p.split('/apps/evasionsoleil/proxy')[0] + '/apps/evasionsoleil/proxy';
+              input = prefix + input;
+            }
+          }
+          return origFetch.call(this, input, init);
+        };
+      } catch (e) {}
+      try {
+        var href = window.location.href.toLowerCase();
+        var isChatEmbed =
+          href.indexOf('mode=widget_chat') !== -1 ||
+          href.indexOf('mode=chat') !== -1 ||
+          href.indexOf('/chat') !== -1 ||
+          href.indexOf('/embed/chat') !== -1;
+        var isTransparentEmbed =
+          isChatEmbed ||
+          href.indexOf('mode=widget_devis') !== -1 ||
+          href.indexOf('mode=devis') !== -1 ||
+          href.indexOf('layout=home') !== -1 ||
+          href.indexOf('/soumission') !== -1 ||
+          href.indexOf('/devis') !== -1 ||
+          href.indexOf('/embed/devis') !== -1 ||
+          href.indexOf('mode=widget_newsletter') !== -1 ||
+          href.indexOf('mode=newsletter') !== -1 ||
+          href.indexOf('mode=infolettre') !== -1 ||
+          href.indexOf('/newsletter') !== -1 ||
+          href.indexOf('/infolettre') !== -1 ||
+          href.indexOf('/embed/newsletter') !== -1;
+
+        if (isTransparentEmbed) {
+          document.documentElement.classList.add('transparent-embed-mode');
+          if (isChatEmbed) {
+            document.documentElement.classList.add('widget-chat-mode');
+          }
+          document.documentElement.style.setProperty('background', 'transparent', 'important');
+          document.documentElement.style.setProperty('background-color', 'transparent', 'important');
+          document.addEventListener('DOMContentLoaded', function() {
+            if (document.body) {
+              document.body.classList.add('transparent-embed-mode');
+              if (isChatEmbed) {
+                document.body.classList.add('widget-chat-mode');
+              }
+              document.body.classList.remove('bg-slate-50');
+              document.body.style.setProperty('background', 'transparent', 'important');
+              document.body.style.setProperty('background-color', 'transparent', 'important');
+              document.body.style.setProperty('margin', '0', 'important');
+              document.body.style.setProperty('padding', '0', 'important');
+            }
+            var root = document.getElementById('root');
+            if (root) {
+              root.style.setProperty('background', 'transparent', 'important');
+              root.style.setProperty('background-color', 'transparent', 'important');
+              root.style.setProperty('width', '100%', 'important');
+            }
+          });
+        }
+      } catch(e) {}
+    </script>
+    <style>
+      html.transparent-embed-mode,
+      body.transparent-embed-mode,
+      body.transparent-embed-mode #root {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden !important;
+        background: transparent !important;
+        background-color: transparent !important;
+      }
+      html.widget-chat-mode,
+      body.widget-chat-mode {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: transparent !important;
+        background-color: transparent !important;
+      }
+      body.widget-chat-mode #root {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        justify-content: flex-end !important;
+      }
+    </style>
+  </head>
+  <body class="font-sans antialiased bg-slate-50 text-slate-900 selection:bg-[#338b84] selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
